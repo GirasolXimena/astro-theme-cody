@@ -8,7 +8,7 @@ const dateOptions = {
 };
 
 const dateFormat = new Intl.DateTimeFormat(
-  dateOptions.locale, 
+  dateOptions.locale,
   dateOptions.options as Intl.DateTimeFormatOptions
 );
 
@@ -22,4 +22,9 @@ export function getFormattedDate(
   }
 
   return dateFormat.format(new Date(date));
+}
+
+export const isDateInPast = (firstDate: Date | string) => {
+  if (!(firstDate instanceof Date)) firstDate = new Date(firstDate)
+  return firstDate.setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0)
 }

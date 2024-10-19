@@ -1,7 +1,11 @@
 import { getCollection, type CollectionEntry } from "astro:content";
+import { isDateInPast } from "./date";
 
 export async function getAllPosts(filterHidden: boolean = false) {
 	return await getCollection("blog", ({ data }) => {
+
+		// don't show posts scheduled to be published in future
+		if(!isDateInPast(data.pubDate)) return false
 		if (import.meta.env.PROD) {
 			if (filterHidden) {
 				return !data.hide;
