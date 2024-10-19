@@ -1,0 +1,187 @@
+<script>
+  import Hydra from "hydra-synth";
+
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  const vizContainer = document.getElementById("viz") as HTMLDivElement;
+  const audio = document.getElementById("audio") as HTMLAudioElement;
+  canvas.width = 600;
+  canvas.height = 600;
+
+  let start = 0;
+  let previous = 0;
+  let animationId = 0;
+
+  const hydra = new Hydra({
+    canvas: canvas,
+    detectAudio: false,
+    makeGlobal: false,
+    autoLoop: false
+  })
+  const step = (timestamp: number) => {
+    const dt = timestamp - previous;
+
+    if (start === 0) {
+      start = timestamp;
+    }
+
+    hydra.tick(dt);
+
+    previous = timestamp;
+    if (audio.duration > 0 && !audio.paused) {
+      animationId = requestAnimationFrame(step);
+    }
+  };
+
+  const handleClick = (_e: MouseEvent) => {
+    if (audio.duration > 0 && !audio.paused) {
+      audio.pause();
+    } else {
+      audio.play();
+      animationId = requestAnimationFrame(step);
+    }
+  };
+
+  vizContainer?.addEventListener("click", handleClick, false);
+  const synth = hydra.synth
+
+  synth.noise(18)
+    .colorama(1)
+    .posterize(2)
+    .kaleid(50)
+    .mask(synth.shape(25, 0.25).modulateScale(synth.noise(400.5, 0.5)))
+    .mask(synth.shape(400, 1, 2.125))
+    .modulateScale(synth.osc(6, 0.125, 0.05).kaleid(50))
+    .mult(synth.osc(20, 0.05, 2.4).kaleid(50), 0.25)
+    .scale(1.75, 0.65, 0.5)
+    // .modulate(synth.noise(() => synth.a.fft[0] * 2))
+    .modulate(synth.noise(0.5))
+    .saturate(6)
+    .posterize(4, 0.2)
+    .scale(1.5)
+    .out();
+
+  animationId = requestAnimationFrame(step);
+</script>
+<!-- <script>
+  var player = document.getElementById('audio') as HTMLAudioElement;
+  class SoundCloudAudioSource  {
+    analyser!: AnalyserNode;
+    streamData: Uint8Array;
+    volume: number;
+    streamUrl: string;
+    constructor(streamUrl: string) {
+      this.streamUrl = streamUrl
+      this.streamData = new Uint8Array(128)
+      var audioCtx = new window.AudioContext(); // this is because it's not been standardised accross browsers yet.
+      this.analyser = audioCtx.createAnalyser();
+      this.analyser.fftSize = 256; // see - there is that 'fft' thing.
+      var source = audioCtx.createMediaElementSource(player); // this is where we hook up the <audio> element
+        source.connect(this.analyser);
+        this.analyser.connect(audioCtx.destination);
+        this.volume = 0
+        this.streamData = new Uint8Array(128); // This just means we will have 128 "bins" (always half the analyzer.fftsize value), each containing a number between 0 and 255.
+      }
+
+
+
+    sampleAudioStream =  () => {
+      // This closure is where the magic happens. Because it gets called with setInterval below, it continuously samples the audio data
+      // and updates the streamData and volume properties. This the SoundCouldAudioSource function can be passed to a visualization routine and
+      // continue to give real-time data on the audio stream.
+      this.analyser.getByteFrequencyData(this.streamData);
+      // calculate an overall volume value
+      var total = 0;
+      for (var i = 0; i < 80; i++) {
+        // get the volume from the first 80 bins, else it gets too loud with treble
+        total += this.streamData[i];
+      }
+      this.volume = total;
+      setInterval(this.sampleAudioStream, 20); //
+    };
+    
+    playStream = (streamUrl: string) => {
+      // get the input stream from the audio element
+      player.setAttribute("src", streamUrl);
+      player.play();
+    };
+
+  };
+
+  var audioSource = new SoundCloudAudioSource("player");
+  var canvasElement = document.getElementById("canvas") as HTMLCanvasElement;
+  var context = canvasElement.getContext("2d") as CanvasRenderingContext2D;
+  // if (canvasElement) return;
+  var bin = 128
+  var draw = function () {
+    // you can then access all the frequency and volume data
+    // and use it to draw whatever you like on your canvas
+    for (bin = 0; bin < audioSource.streamData.length; bin++) {
+      // do something with each value. Here's a simple example
+      var val = audioSource.streamData[bin];
+      var red = val;
+      var green = 255 - val;
+      var blue = val / 2;
+      context.fillStyle = "rgb(" + red + ", " + green + ", " + blue + ")";
+      context.fillRect(bin * 2, 0, 2, 200);
+      // use lines and shapes to draw to the canvas is various ways. Use your imagination!
+    }
+    requestAnimationFrame(draw);
+  };
+
+  // audioSource.playStream("url_to_soundcloud_stream");
+  if(context) {
+    // draw();
+
+  }
+</script> -->
+<div
+  class:list={[
+    "gap-8",
+    "border-2",
+    "border-red-300",
+    "p-4",
+    "flex",
+    "flex-col",
+    "justify-center",
+    "items-start",
+  ]}
+  ,
+>
+  <h2>music vizualizer</h2>
+  <div
+    id="viz"
+    class:list={[
+      "self-center",
+      "inline-block",
+      "viz",
+      "border-1",
+      "border-2",
+      "border-yellow-400",
+      "bg-black",
+      "cursor-pointer",
+      "relative",
+    ]}
+    ,
+  >
+    <div
+      class:list={[
+        "w-full",
+        "h-full",
+        "absolute",
+        "bg-black",
+        "grid",
+        "place-items-center",
+        "text-2xl",
+        "opacity-0",
+        "hover:opacity-50",
+        "transition-opacity",
+      ]}
+    >
+      click to play
+    </div>
+    <audio id="audio">
+      <source src="mix-1-192.mp3" type="audio/mpeg" />
+    </audio>
+    <canvas id="canvas">music visualizer</canvas>
+  </div>
+</div>

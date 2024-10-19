@@ -18,12 +18,12 @@ type SocialLink = {
 }
 
 export const siteConfig: Config = {
-  title: "Astro Theme Cody",
+  title: "xofeliaa",
   description: "",
-  lang: "en-GB",
+  lang: "en-US",
   profile: {
-    author: "Amy Dang",
-    description: "your bio description"
+    author: "xofeliaa",
+    description: "minneapolis based multimedia artist"
   }
 }
 
@@ -39,7 +39,7 @@ export const socialLinks: Array<SocialLink> = [
     link: "https://github.com/kirontoo/astro-theme-cody",
   },
   {
-    icon: "mdi:linkedin",
+    icon: "mdi:soundcloud",
     friendlyName: "LinkedIn",
     link: "#",
   },
@@ -49,31 +49,36 @@ export const socialLinks: Array<SocialLink> = [
     link: "mailto:ndangamy@gmail.com",
   },
   {
-    icon: "mdi:rss",
+    icon: "mdi:instagram",
     friendlyName: "rss",
     link: "/rss.xml"
-  }
+  },
+  {
+    icon: "mdi:twitter",
+    friendlyName: "rss",
+    link: "/rss.xml"
+  },
 ];
 
 export const NAV_LINKS: Array<{ title: string, path: string }> = [
   {
-    title: "Home",
+    title: "home",
     path: "/",
   },
   {
-    title: "About",
+    title: "about",
     path: "/about",
   },
   {
-    title: "Blog",
+    title: "blog",
     path: "/blog",
   },
   {
-    title: "Projects",
+    title: "projects",
     path: '/projects'
   },
   {
-    title: "Archive",
+    title: "archive",
     path: '/archive'
   }
 ];
